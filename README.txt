@@ -11,6 +11,12 @@ Le programme s'appelle par ./solostrass et prend un ou deux paramètres
 - Si un seul paramètre est renseigné, alors ce paramètre sera le nombre à tester. De bases le nombre est testé dix fois
 - Si deux paramètres sont renseignés, alors le premier sera le nombre d'itération du test de Solovay-Strassen à effectuer et le second le nombre à tester
 
+CODE D'ERREURS:
+0 : aucune erreurs, le programme s'est achevé correctement;
+1: un des nombres saisies est invalide
+2: le nombre à tester à une valeur inferieur à 3
+3: trop de paramètre ont été saisi
+
 POUR COMPILER:
 gcc main.c -Wall -lgmp -o solotrass
 

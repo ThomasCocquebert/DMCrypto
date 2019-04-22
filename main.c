@@ -359,6 +359,12 @@ int main(int argc, char** argv)
 			exit(1);
 		}
 	}
+	if(testArg(argc)==0)
+	{
+		mpz_clear(premier);
+		printf("Erreur : nombre de paramètre invalide\n");
+		exit(3);
+	}
 	mpz_clear(premier);
 	exit(0);
 }
