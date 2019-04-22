@@ -4,6 +4,11 @@
 #include <time.h>
 
 /*
+* Coded by Thomas COCQUEBERT
+* Nr Etudiant : 21600767
+*/
+
+/*
 * Convertit une chaîne de carctères en mpz_t avec la focntion mpz_set_str
 * Prend un pointeur de mpz_t et un const char* en entrée
 * Renvoie 1 si la chaine de caractères est un nombre valide en base 10 et 0 sinon

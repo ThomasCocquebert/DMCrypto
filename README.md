@@ -1,5 +1,8 @@
 # DMCrypto
 
+Par Thomas COCQUEBERT
+Nr Etudiant 21600767
+
 Un makefile est à la disposition pour compiler et tester le code.
 La description des fonctions est détaillé dans le fichier main.c.
 La fonction pour calculer le symbole de Jacobi n'a pas été implémentée, la fonction donnée dans la librairie est donc utilisée à la place.
