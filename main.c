@@ -107,6 +107,15 @@ int calcJacobi(mpz_t num, mpz_t den)
 	return mpz_jacobi(num,den);
 }
 
+/*
+* Square and Multiply
+* Prend en paramètre un pointeur mpz_t *a qui représente le nombre mis à a puissance
+* Un pounteur mpz_t *h qui représente la valeur de la puissance
+* Un mpz_t n qui représente la valeur du modulo
+* *a prend directement la valeur de a^h%n à la fin de la fonction
+* Tiré de la version itérative de l'algorithme trouvé sur 
+* https://en.wikipedia.org/wiki/Exponentiation_by_squaring#Basic_method
+*/
 void squareMultiply(mpz_t *a, mpz_t *h, mpz_t n)
 {
 	mpz_t y;
@@ -141,55 +150,209 @@ void squareMultiply(mpz_t *a, mpz_t *h, mpz_t n)
 	mpz_clear(y);
 }
 
+/*
+* Fonction avec un seul paramètre
+* Fait 10 fois le teste se Solovay-Strassen par défaut
+* Renvoie un int : 0 si le nombre n'est pas premier, 1 si le nombre est probablement premier après 10 itération
+* nbJacobi contient le nombre de Jacobi de (a/nbTeste)
+* rand contient le nombre aléatoire entre 2 et nbTeste-1
+* expo contient la valeur de l'exponentielle utilisé dans Square and Multiply
+* nMinus1 contient nbTeste -1 utile pour tester si rand après S&M est égale à -1 mod nbTeste 
+*/
+int solovayStrassen(mpz_t nbTeste)
+{
+	int i;
+	mpz_t rand, expo, nbJacobi, nMinus1;
+	mpz_init(nbJacobi);
+	mpz_init(rand);
+	mpz_init(expo);
+	mpz_init(nMinus1);
+	mpz_sub_ui(nMinus1,nbTeste,1);
+	gmp_randstate_t seed;
+	gmp_randinit_mt(seed);
+
+
+	for(i=0;i<10;i++)
+	{
+		aleaNb(nbTeste,&rand,seed);
+		printf("Nombre a = ");
+		mpz_out_str(NULL,10,rand);
+		printf("\n");
+		mpz_set_si(nbJacobi,calcJacobi(rand,nbTeste));
+		printf("Jacobi de ");
+		mpz_out_str(NULL,10,rand);
+		printf(" sur ");
+		mpz_out_str(NULL,10,nbTeste);
+		printf(" = ");
+		mpz_out_str(NULL,10,nbJacobi);
+		printf("\n \n");
+		if(mpz_cmp_ui(nbJacobi,0)==0)
+		{
+			printf("Le nombre n'est pas premier\n");
+			mpz_clear(rand);
+			mpz_clear(expo);
+			mpz_clear(nMinus1);
+			mpz_clear(nbJacobi);
+			gmp_randclear(seed);
+			return 0;
+		}
+		calcExposant(nbTeste,&expo);
+		printf("Exposant = ");
+		mpz_out_str(NULL,10,expo);
+		printf("\n");
+		squareMultiply(&rand,&expo,nbTeste);
+		printf("S&M = ");
+		mpz_out_str(NULL,10,rand);
+		printf("\n");
+		printf("r mod n = ");
+		mpz_out_str(NULL,10,nbJacobi);
+		printf("\n \n");
+		if(mpz_cmp(rand,nbJacobi))
+		{
+			if(mpz_cmp(rand,nMinus1))
+			{
+				printf("Le nombre n'est pas premier\n");
+				mpz_clear(rand);
+				mpz_clear(expo);
+				mpz_clear(nMinus1);
+				mpz_clear(nbJacobi);
+				gmp_randclear(seed);
+				return 0;
+			}
+		}
+		
+	}
+	mpz_clear(rand);
+	mpz_clear(expo);
+	mpz_clear(nbJacobi);
+	mpz_clear(nMinus1);
+	gmp_randclear(seed);
+	return 1;
+}
+
+/*
+* Même fonction que  solovayStrassen
+* prend int kiteration en paramètre qui définit combien de fois la fonction effectue le test
+*/
+int solovayStrassenKiteration(unsigned long int kiteration, mpz_t nbTeste)
+{
+	if(kiteration <= 0)
+	{
+		printf("Erreur : nombre de teste invalide\n");
+		return -1;
+	}
+	int i;
+	mpz_t rand, expo, nbJacobi, nMinus1;
+	mpz_init(nbJacobi);
+	mpz_init(rand);
+	mpz_init(expo);
+	mpz_init(nMinus1);
+	mpz_sub_ui(nMinus1,nbTeste,1);
+	gmp_randstate_t seed;
+	gmp_randinit_mt(seed);
+
+
+	for(i=0;i<kiteration;i++)
+	{
+		aleaNb(nbTeste,&rand,seed);
+		printf("Nombre a = ");
+		mpz_out_str(NULL,10,rand);
+		printf("\n");
+		mpz_set_si(nbJacobi,calcJacobi(rand,nbTeste));
+		printf("Jacobi de ");
+		mpz_out_str(NULL,10,rand);
+		printf(" sur ");
+		mpz_out_str(NULL,10,nbTeste);
+		printf(" = ");
+		mpz_out_str(NULL,10,nbJacobi);
+		printf("\n \n");
+		if(mpz_cmp_ui(nbJacobi,0)==0)
+		{
+			printf("Le nombre n'est pas premier\n");
+			mpz_clear(rand);
+			mpz_clear(expo);
+			mpz_clear(nMinus1);
+			mpz_clear(nbJacobi);
+			gmp_randclear(seed);
+			return 0;
+		}
+		calcExposant(nbTeste,&expo);
+		printf("Exposant = ");
+		mpz_out_str(NULL,10,expo);
+		printf("\n");
+		squareMultiply(&rand,&expo,nbTeste);
+		printf("S&M = ");
+		mpz_out_str(NULL,10,rand);
+		printf("\n");
+		printf("r mod n = ");
+		mpz_out_str(NULL,10,nbJacobi);
+		printf("\n \n");
+		if(mpz_cmp(rand,nbJacobi))
+		{
+			if(mpz_cmp(rand,nMinus1))
+			{
+				printf("Le nombre n'est pas premier\n");
+				mpz_clear(rand);
+				mpz_clear(expo);
+				mpz_clear(nMinus1);
+				mpz_clear(nbJacobi);
+				gmp_randclear(seed);
+				return 0;
+			}
+		}
+		
+	}
+	mpz_clear(rand);
+	mpz_clear(expo);
+	mpz_clear(nbJacobi);
+	mpz_clear(nMinus1);
+	gmp_randclear(seed);
+	return 1;
+}
+
 int main(int argc, char** argv)
 {
-	mpz_t num,den,exp;
-	mpz_init(num);
-	mpz_init(den);
-	mpz_init(exp);
-	stringToMpz(argv[1],&num);
-	stringToMpz(argv[2],&den);
-	printf("%d\n",calcJacobi(num,den));
-	calcExposant(den,&exp);
-	mpz_out_str(NULL,10,exp);
-	printf("\n");
-	/*
-	if(!testArg(argc)) exit(1);
-	gmp_randstate_t rand;
-	gmp_randinit_mt(rand);
-
-	mpz_t nb,alea,nbPgcd;
-	mpz_init(nb);
-	mpz_init(alea);
-	mpz_init(nbPgcd);
-	stringToMpz(argv[1],&nb);
-	aleaNb(nb,&alea,rand);
-	aleaNb(nb,&alea,rand);
-	mpz_out_str(NULL,10,nb);
-	printf("\n");
-	mpz_out_str(NULL,10,alea);
-	printf("\n");
-	pgcd(nb,alea,&nbPgcd);
-	mpz_out_str(NULL,10,nbPgcd);
-	printf("\n");
-	mpz_clear(nb);
-	mpz_clear(alea);
-	mpz_clear(nbPgcd);
-	gmp_randclear(rand);
-	*/
-	/*
-	if(stringToMpz(argv[1], &nb) == 1)
+	mpz_t premier;
+	unsigned long int k;
+	mpz_init(premier);
+	if(testArg(argc)==1)
 	{
-		printf("Test réussi\n");
-		mpz_clear(nb);
-		exit(0);
+		if(stringToMpz(argv[1],&premier))
+		{
+			printf("10 itérations du test de Solovay Strassen\n");
+			if(solovayStrassen(premier)) printf("Le nombre est probablement premier \n");
+		}
+		else
+		{
+			printf("Erreur : nombre invalide\n");
+			mpz_clear(premier);
+			exit(1);
+		}
 	}
-	else
+	if(testArg(argc)==2)
 	{
-		printf("Echec\n");
-		mpz_clear(nb);
-		exit(1);
+		if(stringToMpz(argv[1],&premier))
+		{
+			k = mpz_get_ui(premier);
+		}
+		else
+		{
+			printf("Erreur : nombre invalide\n");
+			mpz_clear(premier);
+			exit(1);
+		}
+		if(stringToMpz(argv[2],&premier))
+		{
+			printf("%ld itérations du test de Solovay-Strassen\n",k);
+			if(solovayStrassenKiteration(k,premier)) printf("Le nombre est probablement premier \n");
+		}
+		else
+		{
+			printf("Erreur : nombre invalide\n");
+			mpz_clear(premier);
+			exit(1);
+		}
 	}
-	*/
+	mpz_clear(premier);
 	exit(0);
 }
