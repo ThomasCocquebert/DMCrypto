@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <gmp.h>
 #include <time.h>
+#include <math.h>
 
 /*
 * Coded by Thomas COCQUEBERT
@@ -91,31 +92,198 @@ void calcExposant(mpz_t n, mpz_t* exp)
 	mpz_tdiv_q_ui(*exp,*exp,2);
 }
 
-/*Pas encore implémenté
+/*/!\ IMPLEMENTATION NE MARCHE PAS /!\
+* Probème de boucle infini pour la fonction en commentaire en l'état
 * Renvoie juste la valeur de la fonction mpz_jacobi
+* Renvoie 0, 1 ou -1
 * Prend en paramètre le nombre a tiré au hasard, et le nombre n dont il faut tester la primalité
 * Ici, a = num et n = den
+* On a une boucle qui teste si n est égal à 1 ou 2 pour sortir de la boucle
+* Les étapes du calcul sont noté par des commentaires
+* A la fin de la boucle, on applique les propriété si num = 1 ou si num = 2
+* On renvoie 0 à la fin dela fonction si une erreur s'est passé et qu'aucun return n'a été appelé avant
 */
 int calcJacobi(mpz_t num, mpz_t den)
 {
 	/*
-	int pow2 = 0;
-	mpz_t div2;
-	mpz_init(div2);
-	*/
+	double cpt = 0;
+	double signe = 0;
+	double signeMinus = 0;
 
-	/*
-	mpz_mod(num,num,den);
-	mpz_out_str(NULL,10,num);
-	printf("\n");
-	*/
-	/*
-	mpz_fdiv_q_2exp(div2,num,pow2);
-	mpz_out_str(NULL,10,div2);
-	printf("\n");
-	printf("%d\n",pow2);
-
-	mpz_clear(div2);
+	mpz_t mod2;
+	mpz_t tmp,tmp2;
+	mpz_t gcd;
+	mpz_init(gcd);
+	mpz_init(tmp);
+	mpz_init(tmp2);
+	mpz_init(mod2);
+	mpz_set_ui(mod2,2);
+	while((mpz_cmp_ui(num,1)!=0) && (mpz_cmp_ui(num,2)!=0))
+	{
+		mpz_out_str(NULL,10,num);
+		printf("\n");
+		cpt = 0;
+		// Etape 1
+		if(mpz_cmp(num,den)>0)
+		{
+			mpz_mod(num,num,den);
+		}
+		// Etape 2
+		do
+		{
+			mpz_mod(tmp,num,mod2);
+			if(mpz_cmp_ui(tmp,0)==0)
+			{
+				cpt++;
+				mpz_tdiv_q_ui(num,num,2);
+			}
+		}
+		while((mpz_cmp_ui(tmp,0)==0) && mpz_cmp_ui(num,0)!=0);
+		if(cpt != 0)
+		{
+			mpz_set(tmp,den);
+			mpz_mod_ui(tmp,tmp,8);
+			if(mpz_cmp_ui(tmp,1)==0) signe = 1;
+			if(mpz_cmp_ui(tmp,3)==0) signe = -1;
+			if(mpz_cmp_ui(tmp,5)==0) signe = -1;
+			if(mpz_cmp_ui(tmp,7)==0) signe = 1;
+			signe = pow(signe,cpt);
+			if(signe == -1) signeMinus++;
+		}
+		// Etape 3
+		if(mpz_cmp_ui(num,1)==0)
+			{
+				mpz_clear(mod2);
+				mpz_clear(tmp);
+				mpz_clear(tmp2);
+				mpz_clear(gcd);
+				return 1;
+			}
+		pgcd(num,den,&gcd);
+		if(mpz_cmp_ui(gcd,1)!=0)
+			{
+				mpz_clear(mod2);
+				mpz_clear(tmp);
+				mpz_clear(tmp2);
+				mpz_clear(gcd);
+				return 0;
+			}
+		// Etape 4
+		mpz_set(tmp,num);
+		mpz_set(tmp2,den);
+		mpz_mod_ui(tmp,tmp,4);
+		mpz_mod_ui(tmp2,tmp2,4);
+		if((mpz_cmp(tmp,tmp2) == 0) && (mpz_cmp_ui(tmp,3)))
+		{
+			signeMinus++;
+			mpz_swap(num,den);
+		}
+		if((mpz_cmp_ui(tmp,1)==0) && (mpz_cmp_ui(tmp2,1)==0))
+		{
+			mpz_swap(num,den);
+		}
+	}
+	if(mpz_cmp_ui(num,1)==0)
+	{
+		if((int)signeMinus%2==0)
+			{
+				mpz_clear(mod2);
+				mpz_clear(tmp);
+				mpz_clear(tmp2);
+				mpz_clear(gcd);
+				return 1;
+			}
+		else
+			{
+				mpz_clear(mod2);
+				mpz_clear(tmp);
+				mpz_clear(tmp2);
+				mpz_clear(gcd);
+				return -1;
+			}
+	}
+	mpz_set(tmp,den);
+	mpz_mod_ui(tmp,tmp,8);
+	if(mpz_cmp_ui(tmp,1)==0)
+	{
+		if((int)signeMinus%2==0)
+			{
+				mpz_clear(mod2);
+				mpz_clear(tmp);
+				mpz_clear(tmp2);
+				mpz_clear(gcd);
+				return 1;
+			}
+		else
+			{
+				mpz_clear(mod2);
+				mpz_clear(tmp);
+				mpz_clear(tmp2);
+				mpz_clear(gcd);
+				return -1;
+			}
+	}
+	if(mpz_cmp_ui(tmp,3)==0)
+	{
+		if((int)signeMinus+1%2==0)
+			{
+				mpz_clear(mod2);
+				mpz_clear(tmp);
+				mpz_clear(tmp2);
+				mpz_clear(gcd);
+				return 1;
+			}
+		else
+			{
+				mpz_clear(mod2);
+				mpz_clear(tmp);
+				mpz_clear(tmp2);
+				mpz_clear(gcd);
+				return -1;
+			}
+	}
+	if(mpz_cmp_ui(tmp,5)==0)
+	{
+		if((int)signeMinus+1%2==0)
+			{
+				mpz_clear(mod2);
+				mpz_clear(tmp);
+				mpz_clear(tmp2);
+				mpz_clear(gcd);
+				return 1;
+			}
+		else
+			{
+				mpz_clear(mod2);
+				mpz_clear(tmp);
+				mpz_clear(tmp2);
+				mpz_clear(gcd);
+				return -1;
+			}
+	}
+	if(mpz_cmp_ui(tmp,7)==0)
+	{
+		if((int)signeMinus%2==0)
+			{
+				mpz_clear(mod2);
+				mpz_clear(tmp);
+				mpz_clear(tmp2);
+				mpz_clear(gcd);
+				return 1;
+			}
+		else
+			{
+				mpz_clear(mod2);
+				mpz_clear(tmp);
+				mpz_clear(tmp2);
+				mpz_clear(gcd);
+				return -1;
+			}
+	}
+	mpz_clear(mod2);
+	mpz_clear(tmp);
+	mpz_clear(tmp2);
+	mpz_clear(gcd);
 	return 0;
 	*/
 	return mpz_jacobi(num,den);

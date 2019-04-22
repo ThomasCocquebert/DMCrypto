@@ -5,7 +5,7 @@ Nr Etudiant 21600767
 
 Un makefile est à la disposition pour compiler et tester le code.
 La description des fonctions est détaillé dans le fichier main.c.
-La fonction pour calculer le symbole de Jacobi n'a pas été implémentée, la fonction donnée dans la librairie est donc utilisée à la place.
+La fonction pour calculer le symbole de Jacobi n'a pas été implémentée, la fonction donnée dans la librairie est donc utilisée à la place. Néanmoins, vous retrouverer le code commenté dans le main.c.
 
 Le programme s'appelle par ./solostrass et prend un ou deux paramètres
 - Si un seul paramètre est renseigné, alors ce paramètre sera le nombre à tester. De bases le nombre est testé dix fois
