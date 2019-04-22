@@ -5,7 +5,7 @@ La description des fonctions est détaillé dans le fichier main.c.
 La fonction pour calculer le symbole de Jacobi n'a pas été implémentée, la fonction donnée dans la librairie est donc utilisée à la place.
 
 Le programme s'appelle par ./solostrass et prend un ou deux paramètres
-- Si un seul paramètre est renseigné, alors ce paramètre sera le nombre à tester. De bases le nombre est tester dix fois
+- Si un seul paramètre est renseigné, alors ce paramètre sera le nombre à tester. De bases le nombre est testé dix fois
 - Si deux paramètres sont renseignés, alors le premier sera le nombre d'itération du test de Solovay-Strassen à effectuer et le second le nombre à tester
 
 POUR COMPILER:
