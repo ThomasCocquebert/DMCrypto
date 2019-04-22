@@ -30,8 +30,6 @@ void aleaNb(mpz_t limit, mpz_t* setNb, gmp_randstate_t rand)
 	mpz_sub_ui(subLim,subLim,2);
 	mpz_urandomm(*setNb,rand,subLim);
 	mpz_add_ui(*setNb,*setNb,2);
-	mpz_out_str(NULL,10,*setNb);
-	printf("\n");
 	mpz_clear(subLim);
 }
 
