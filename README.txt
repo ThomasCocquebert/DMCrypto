@@ -1,10 +1,10 @@
-# DMCrypto
+DM Crypto
 
 Un makefile est à la disposition pour compiler et tester le code.
 La description des fonctions est détaillé dans le fichier main.c.
 La fonction pour calculer n'a pas été implémenté, la fonction donnée dans la librairie est donc utilisé à la place.
 
-#POUR COMPILER:
+POUR COMPILER:
 gcc main.c -Wall -lgmp -o solotrass
 
 OU
@@ -19,7 +19,7 @@ make
 
 
 
-#POUR TESTER:
+POUR TESTER:
 ./solostrass nb_à_tester
 
 OU
@@ -37,7 +37,7 @@ make testk
 
 
 
-#POUR TESTER LES FUITES MEMOIRES:
+POUR TESTER LES FUITES MEMOIRES:
 make memCheck
 
 OU
@@ -47,7 +47,7 @@ make memCheckk
 
 
 
-#DIVERS:
+DIVERS:
 Pour supprimer l'exécutable:
 make clean
 
