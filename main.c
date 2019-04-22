@@ -56,13 +56,105 @@ void pgcd(mpz_t a, mpz_t b, mpz_t *nbPgcd)
 	mpz_clear(reste);
 }
 
+/*
+* Test le nombre d'argument pour s'assurer du bon nombre
+* Renvoie 0 si le nombrd d'argumen est invalide, 1 si seul le chiffre à tester est fourni, et 2 si le nombre
+* à tester ET le nombre de répétition du test est donné
+*/
+int testArg(int argc)
+{
+	if(argc == 1) return 0;
+	if(argc > 3) return 0;
+	if(argc == 2) return 1;
+	if(argc == 3) return 2;
+	return 0;
+}
+
+/*
+* Calcul l'exposant utilisé dans le Square and Multiply
+* Prend un mpz_t et un pointeur de mpz_t en paramètre
+* Renvoie void car l'exposant est directement stockée dans *exp
+*/
+void calcExposant(mpz_t n, mpz_t* exp)
+{
+	mpz_sub_ui(*exp,n,1);
+	mpz_tdiv_q_ui(*exp,*exp,2);
+}
+
+//A implémenter
 int calcJacobi(mpz_t num, mpz_t den)
 {
+	/*
+	int pow2 = 0;
+	mpz_t div2;
+	mpz_init(div2);
+	*/
+
+	/*
+	mpz_mod(num,num,den);
+	mpz_out_str(NULL,10,num);
+	printf("\n");
+	*/
+	/*
+	mpz_fdiv_q_2exp(div2,num,pow2);
+	mpz_out_str(NULL,10,div2);
+	printf("\n");
+	printf("%d\n",pow2);
+
+	mpz_clear(div2);
 	return 0;
+	*/
+	return mpz_jacobi(num,den);
+}
+
+void squareMultiply(mpz_t *a, mpz_t *h, mpz_t n)
+{
+	mpz_t y;
+	mpz_init(y);
+
+	if(mpz_cmp_ui(*h,0)==0)
+	{
+		mpz_set_ui(*a,1);
+		return;
+	}
+	mpz_set_ui(y,1);
+	while(mpz_cmp_ui(*h,1))
+	{
+		if(mpz_even_p(*h))
+		{
+			mpz_mul(*a,*a,*a);
+			mpz_mod(*a,*a,n);
+			mpz_tdiv_q_ui(*h,*h,2);
+		}
+		else
+		{
+			mpz_mul(y,*a,y);
+			mpz_mod(y,y,n);
+			mpz_mul(*a,*a,*a);
+			mpz_mod(*a,*a,n);
+			mpz_sub_ui(*h,*h,1);
+			mpz_tdiv_q_ui(*h,*h,2);
+		}
+	}
+	mpz_mul(*a,*a,y);
+	mpz_mod(*a,*a,n);
+	mpz_clear(y);
 }
 
 int main(int argc, char** argv)
 {
+	mpz_t num,den,exp;
+	mpz_init(num);
+	mpz_init(den);
+	mpz_init(exp);
+	stringToMpz(argv[1],&num);
+	stringToMpz(argv[2],&den);
+	printf("%d\n",calcJacobi(num,den));
+	calcExposant(den,&exp);
+	mpz_out_str(NULL,10,exp);
+	printf("\n");
+	/*
+	if(!testArg(argc)) exit(1);
 	gmp_randstate_t rand;
 	gmp_randinit_mt(rand);
 
@@ -84,6 +176,7 @@ int main(int argc, char** argv)
 	mpz_clear(alea);
 	mpz_clear(nbPgcd);
 	gmp_randclear(rand);
+	*/
 	/*
 	if(stringToMpz(argv[1], &nb) == 1)
 	{
