@@ -175,17 +175,7 @@ int solovayStrassen(mpz_t nbTeste)
 	for(i=0;i<10;i++)
 	{
 		aleaNb(nbTeste,&rand,seed);
-		printf("Nombre a = ");
-		mpz_out_str(NULL,10,rand);
-		printf("\n");
 		mpz_set_si(nbJacobi,calcJacobi(rand,nbTeste));
-		printf("Jacobi de ");
-		mpz_out_str(NULL,10,rand);
-		printf(" sur ");
-		mpz_out_str(NULL,10,nbTeste);
-		printf(" = ");
-		mpz_out_str(NULL,10,nbJacobi);
-		printf("\n \n");
 		if(mpz_cmp_ui(nbJacobi,0)==0)
 		{
 			printf("Le nombre n'est pas premier\n");
@@ -197,16 +187,7 @@ int solovayStrassen(mpz_t nbTeste)
 			return 0;
 		}
 		calcExposant(nbTeste,&expo);
-		printf("Exposant = ");
-		mpz_out_str(NULL,10,expo);
-		printf("\n");
 		squareMultiply(&rand,&expo,nbTeste);
-		printf("S&M = ");
-		mpz_out_str(NULL,10,rand);
-		printf("\n");
-		printf("r mod n = ");
-		mpz_out_str(NULL,10,nbJacobi);
-		printf("\n \n");
 		if(mpz_cmp(rand,nbJacobi))
 		{
 			if(mpz_cmp(rand,nMinus1))
@@ -220,7 +201,7 @@ int solovayStrassen(mpz_t nbTeste)
 				return 0;
 			}
 		}
-		
+		printf("Itération %d : Le nombre est probablement premier \n",i+1);
 	}
 	mpz_clear(rand);
 	mpz_clear(expo);
@@ -233,6 +214,7 @@ int solovayStrassen(mpz_t nbTeste)
 /*
 * Même fonction que  solovayStrassen
 * prend int kiteration en paramètre qui définit combien de fois la fonction effectue le test
+* Renvoie -1 si le nombre kiteration est invalide
 */
 int solovayStrassenKiteration(unsigned long int kiteration, mpz_t nbTeste)
 {
@@ -255,17 +237,7 @@ int solovayStrassenKiteration(unsigned long int kiteration, mpz_t nbTeste)
 	for(i=0;i<kiteration;i++)
 	{
 		aleaNb(nbTeste,&rand,seed);
-		printf("Nombre a = ");
-		mpz_out_str(NULL,10,rand);
-		printf("\n");
 		mpz_set_si(nbJacobi,calcJacobi(rand,nbTeste));
-		printf("Jacobi de ");
-		mpz_out_str(NULL,10,rand);
-		printf(" sur ");
-		mpz_out_str(NULL,10,nbTeste);
-		printf(" = ");
-		mpz_out_str(NULL,10,nbJacobi);
-		printf("\n \n");
 		if(mpz_cmp_ui(nbJacobi,0)==0)
 		{
 			printf("Le nombre n'est pas premier\n");
@@ -277,16 +249,7 @@ int solovayStrassenKiteration(unsigned long int kiteration, mpz_t nbTeste)
 			return 0;
 		}
 		calcExposant(nbTeste,&expo);
-		printf("Exposant = ");
-		mpz_out_str(NULL,10,expo);
-		printf("\n");
 		squareMultiply(&rand,&expo,nbTeste);
-		printf("S&M = ");
-		mpz_out_str(NULL,10,rand);
-		printf("\n");
-		printf("r mod n = ");
-		mpz_out_str(NULL,10,nbJacobi);
-		printf("\n \n");
 		if(mpz_cmp(rand,nbJacobi))
 		{
 			if(mpz_cmp(rand,nMinus1))
@@ -300,7 +263,7 @@ int solovayStrassenKiteration(unsigned long int kiteration, mpz_t nbTeste)
 				return 0;
 			}
 		}
-		
+		printf("Itération %d : Le nombre est probablement premier \n",i+1);
 	}
 	mpz_clear(rand);
 	mpz_clear(expo);
@@ -344,7 +307,12 @@ int main(int argc, char** argv)
 		if(stringToMpz(argv[2],&premier))
 		{
 			printf("%ld itérations du test de Solovay-Strassen\n",k);
-			if(solovayStrassenKiteration(k,premier)) printf("Le nombre est probablement premier \n");
+			if(solovayStrassenKiteration(k,premier) == 1) printf("Le nombre est probablement premier \n");
+			else if (solovayStrassenKiteration(k,premier) == -1)
+				{
+					printf("Erreur : nombre d'itération incorrect\n");
+					exit(2);
+				}
 		}
 		else
 		{
